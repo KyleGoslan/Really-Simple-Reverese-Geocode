@@ -10,10 +10,12 @@ import UIKit
 import CoreLocation
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var countryLabel: UILabel!
     @IBOutlet weak var localityLabel: UILabel!
     @IBOutlet weak var zipLabel: UILabel!
+    
+    lazy var geocoder = CLGeocoder()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,21 +23,26 @@ class ViewController: UIViewController {
         var location = CLLocation(latitude: 37.33233141, longitude: -122.0312186)
         reverseGeocode(location)
     }
-
+    
     func reverseGeocode(location: CLLocation) {
-        CLGeocoder().reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
-            if error != nil {
-                println("Reverse geocoder failed with error" + error.localizedDescription)
-                return
-            }
-            if placemarks.count > 0 {
-                if let placemark = placemarks.last as? CLPlacemark {
-                    self.updateView(placemark)
+        if !self.geocoder.geocoding {
+            self.geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
+                if error != nil {
+                    println("Reverse geocoder failed with error" + error.localizedDescription)
+                    return
                 }
-            } else {
-                println("Problem with the data received from geocoder")
-            }
-        })
+                if placemarks.count > 0 {
+                    if let placemark = placemarks.last as? CLPlacemark {
+                        self.updateView(placemark)
+                    }
+                } else {
+                    println("Problem with the data received from geocoder")
+                }
+            })
+        } else {
+            println("Geocoder is already geocoding")
+            return
+        }
     }
     
     func updateView(placemark: CLPlacemark) {
@@ -43,6 +50,6 @@ class ViewController: UIViewController {
         localityLabel.text = placemark.administrativeArea + " " + placemark.locality
         zipLabel.text = placemark.postalCode
     }
-
+    
 }
 
