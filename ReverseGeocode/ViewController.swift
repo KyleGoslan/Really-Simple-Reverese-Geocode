@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var location = CLLocation(latitude: 37.33233141, longitude: -122.0312186)
+        let location = CLLocation(latitude: 37.33233141, longitude: -122.0312186)
         reverseGeocode(location)
     }
     
@@ -28,26 +28,26 @@ class ViewController: UIViewController {
         if !self.geocoder.geocoding {
             self.geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
                 if error != nil {
-                    println("Reverse geocoder failed with error" + error.localizedDescription)
+                    print("Reverse geocoder failed with error" + error!.localizedDescription)
                     return
                 }
-                if placemarks.count > 0 {
-                    if let placemark = placemarks.last as? CLPlacemark {
+                if placemarks!.count > 0 {
+                    if let placemark = placemarks!.last {
                         self.updateView(placemark)
                     }
                 } else {
-                    println("Problem with the data received from geocoder")
+                    print("Problem with the data received from geocoder")
                 }
             })
         } else {
-            println("Geocoder is already geocoding")
+            print("Geocoder is already geocoding")
             return
         }
     }
     
     func updateView(placemark: CLPlacemark) {
         countryLabel.text = placemark.country
-        localityLabel.text = placemark.administrativeArea + " " + placemark.locality
+        localityLabel.text = placemark.administrativeArea! + " " + placemark.locality!
         zipLabel.text = placemark.postalCode
     }
     
